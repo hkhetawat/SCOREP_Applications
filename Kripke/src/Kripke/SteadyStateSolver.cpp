@@ -15,6 +15,7 @@
 #include <Kripke/SweepSolver.h>
 #include <vector>
 #include <stdio.h>
+#include <scorep/SCOREP_User.h>
 
 using namespace Kripke::Core;
 
@@ -41,6 +42,11 @@ int Kripke::SteadyStateSolver (Kripke::Core::DataStore &data_store, size_t max_i
 
   // Loop over iterations
   double part_last = 0.0;
+  SCOREP_RECORDING_ON();
+  if(comm.rank() == 0) {
+    SCOREP_USER_REGION_BY_NAME_BEGIN("TRACER_WallTime_kripke", SCOREP_USER_REGION_TYPE_COMMON);
+  }
+  SCOREP_USER_REGION_BY_NAME_BEGIN("TRACER_Loop", SCOREP_USER_REGION_TYPE_COMMON);
   for(size_t iter = 0;iter < max_iter;++ iter){
 
 
@@ -110,7 +116,10 @@ int Kripke::SteadyStateSolver (Kripke::Core::DataStore &data_store, size_t max_i
   if(comm.rank() == 0){
     printf("  Solver terminated\n");
   }
-
+  SCOREP_USER_REGION_BY_NAME_END("TRACER_Loop");
+  if(comm.rank() == 0) {
+    SCOREP_USER_REGION_BY_NAME_END("TRACER_WallTime_kripke");
+  }
   return(0);
 }
 

@@ -2348,10 +2348,6 @@ void EW::timesteploop( vector<Sarray>& U, vector<Sarray>& Um )
    Sarray* dev_F, *dev_Um, *dev_U, *dev_Up, *dev_metric, *dev_j;
    float_sw4* gridsize_dev;   
   
-   SCOREP_RECORDING_ON();
-   // Marks the beginning of code region to be repeated in simulation
-   SCOREP_USER_REGION_BY_NAME_BEGIN("TRACER_Loop", SCOREP_USER_REGION_TYPE_COMMON);
-
    // Do all timing in double, time differences have to much cancellation for float.
    double time_start_solve = MPI_Wtime();
    bool saveerror = false;
@@ -2529,6 +2525,14 @@ void EW::timesteploop( vector<Sarray>& U, vector<Sarray>& Um )
 
 // Set up the  array for data communication
    setup_device_communication_array();
+   
+   SCOREP_RECORDING_ON();
+   // Marks the beginning of code region to be repeated in simulation
+   if (m_myrank == 0)
+   {
+     SCOREP_USER_REGION_BY_NAME_BEGIN("TRACER_WallTime_sw4lite", SCOREP_USER_REGION_TYPE_COMMON);
+   }
+   SCOREP_USER_REGION_BY_NAME_BEGIN("TRACER_Loop", SCOREP_USER_REGION_TYPE_COMMON);
 
 // Begin time stepping loop
    for( int currentTimeStep = beginCycle; currentTimeStep <= mNumberOfTimeSteps; currentTimeStep++ )
@@ -2886,6 +2890,10 @@ void EW::timesteploop( vector<Sarray>& U, vector<Sarray>& Um )
    double time_end_solve = MPI_Wtime();
 
    SCOREP_USER_REGION_BY_NAME_END("TRACER_Loop");
+   if (m_myrank == 0)
+   {
+      SCOREP_USER_REGION_BY_NAME_END("TRACER_WallTime_sw4lite");
+   }
    SCOREP_RECORDING_OFF();
 
    print_execution_time( time_start_solve, time_end_solve, "solver phase" );

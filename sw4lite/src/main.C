@@ -41,8 +41,8 @@ int main( int argc, char** argv )
    //MPI_Init(&argc, &argv);
    int myRank;
    double  time_start, time_end;
-   SCOREP_RECORDING_OFF();
    MPI_Init(&argc, &argv);
+   SCOREP_RECORDING_OFF();
    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
    MPI_Barrier(MPI_COMM_WORLD);
