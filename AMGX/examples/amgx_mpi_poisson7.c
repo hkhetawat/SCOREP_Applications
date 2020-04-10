@@ -115,7 +115,6 @@ int findParamIndex(char **argv, int argc, const char *parm)
 
 int main(int argc, char **argv)
 {
-    SCOREP_RECORDING_OFF();
     //parameter parsing
     int pidx = 0;
     int pidy = 0;
@@ -147,6 +146,7 @@ int main(int argc, char **argv)
     /* MPI init (with CUDA GPUs) */
     //MPI
     MPI_Init(&argc, &argv);
+    SCOREP_RECORDING_OFF();
     MPI_Comm_size(amgx_mpi_comm, &nranks);
     MPI_Comm_rank(amgx_mpi_comm, &rank);
     //CUDA GPUs
